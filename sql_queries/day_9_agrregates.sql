@@ -3,7 +3,7 @@
 --LESSON 10: Queries with aggregates (Pt.1)
 
 --TASK 1: Find the longest time that an employee has been at the studio
-SELECT name, MAX(years_employed)
+SELECT MAX(years_employed)
 FROM employees;
 
 --TASK 2: For each role, find the average number of years employed by employees in that role
