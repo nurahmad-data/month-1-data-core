@@ -1,0 +1,20 @@
+# Ignore generated data files
+*.csv
+
+# n8n Environment and Secrets
+.env
+*.env
+k8s/
+credentials/
+*.sqlite
+
+# Local Development Artifacts
+/dist
+/logs
+*.log
+npm-debug.log*
+
+# OS / Editor Specific
+.DS_Store
+Thumbs.db
+.vscode/
