@@ -1,6 +1,6 @@
 cat <<EOF >> README.md
 
-## Phase 2: Automated ETL Pipeline & Orchestration
+## Automated ETL Pipeline & Orchestration
 **Project:** "Daily VIP Customer Intelligence"
 
 **Visual Architecture:**
