@@ -1,0 +1,150 @@
+{
+  "name": "ETL: Daily VIP Customer Extraction (Postgres ➡️ Gmail)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 8
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "2156c2dd-1ba5-4532-b8c3-a3fbe26a5902",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT c.name, SUM(p.price * oi.quantity) AS total_spent\nFROM customers AS c\nJOIN orders AS o ON c.customer_id = o.customer_id\nJOIN order_items AS oi ON o.order_id = oi.order_id\nJOIN products AS p ON p.product_id = oi.product_id\n    WHERE c.country LIKE 'Japan'\nGROUP BY c.name\n    HAVING SUM(p.price * oi.quantity) > 500\n    ORDER BY total_spent DESC;\n\nSELECT p.category, SUM(p.price * oi.quantity) AS total_revenue\nFROM products AS p\nJOIN order_items AS oi\n    ON p.product_id = oi.product_id\nGROUP BY p.category\nORDER BY total_revenue DESC;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        208,
+        0
+      ],
+      "id": "61a6d362-f2d5-4fff-8030-a80a1b3669d3",
+      "name": "Execute a SQL query",
+      "credentials": {
+        "postgres": {
+          "id": "Pa0PKONggCPqcS6I",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        368,
+        0
+      ],
+      "id": "c0b31c51-6158-48cf-9ec2-83fca91e5d74",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "sendTo": "ahmad.dtranslator@gmail.com",
+        "subject": "The analytics file .csv",
+        "message": "We sent your analytics data",
+        "options": {
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {}
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        528,
+        0
+      ],
+      "id": "d3241dbc-45a0-42d0-8e8c-b73e322d8599",
+      "name": "Send a message",
+      "webhookId": "2279f7de-089c-4d1b-8b87-933277351324",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "hKEsZXpIlKrFmGP5",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "🚀 **Automated VIP Reporting Pipeline**\n\n**1. Trigger:** Daily Cron Schedule (8:00 AM)\n**2. Extract:** PostgreSQL `ecommerce_analytics` (Analytical JOINs)\n**3. Transform:** JSON Array ➡️ `.csv` Binary File\n**4. Load:** Secure Gmail Delivery to Stakeholders\n\n*Status: 🟢 Active (Production)*",
+        "height": 368,
+        "width": 768
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -32,
+        -176
+      ],
+      "typeVersion": 1,
+      "id": "6d5ae022-474a-4154-b495-a371b8208113",
+      "name": "Sticky Note"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Execute a SQL query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute a SQL query": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "f20c8439-2c61-4541-a100-21050c223606",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "34e1d981562be4f4cee70630ab94bef6de2b1e88942bdf8de1b223451a2bec79"
+  },
+  "id": "ahaAILc261wARdml",
+  "tags": []
+}
